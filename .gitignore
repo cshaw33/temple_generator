@@ -3,6 +3,8 @@
 [Oo]bject/
 [Bb]uild/
 
+notes_and_references/
+
 *.csproj
 *.unityproj
 *.sln
