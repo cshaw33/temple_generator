@@ -69,16 +69,17 @@ public class UIControlScript : MonoBehaviour {
 	private float columnHeight;
 	private float columnSpacing;
 	private int columnOrder;
-
 	private GameObject currentCapital;
-	private GameObject currentFluting;
-
 	private int columnFluting;
+	private GameObject currentFluting;
+	
 	private int peristyle;
 
 	private float module;
 	private float columnDiameter;
 	private float intercolumnation;
+
+	private bool amphi;
 
 	private GameObject temple;
 	private GameObject temple_columns;
@@ -98,11 +99,12 @@ public class UIControlScript : MonoBehaviour {
 		module = 1.0f;
 		columnDiameter = 2.0f *module;
 		columnHeight = 6.0f*columnDiameter;
+		amphi = false;
 
 		currentFluting = ColumnSixteen;
 
-		numColumns = 4;
-		columnDepth = 9;
+		numColumns = 6;
+		columnDepth = 13;
 		columnHeight = 6;
 		columnSpacing = 2.25f;
 		columnOrder = 0;
@@ -134,6 +136,11 @@ public class UIControlScript : MonoBehaviour {
 	public void ShowTemple(){
 
 		//clear existing temple, if any;
+		destroyChildren(temple_columns);
+		destroyChildren(temple_entablature);
+		destroyChildren(temple_roof);
+		destroyChildren(temple_walls);
+		destroyChildren(temple_base);
 
 		MakeBase(numColumns, columnDepth, columnSpacing, peristyle);
 		MakeColumns(numColumns, columnDepth, columnHeight, columnSpacing, peristyle);
@@ -147,7 +154,33 @@ public class UIControlScript : MonoBehaviour {
 		return make;
 	}
 
+	public GameObject Make(GameObject go, GameObject parent){
+		GameObject make = Make(go);
+		make.transform.parent = parent.transform;
+		return make;
+	}
+
 	public void MakeBase(int numColumns, int columnDepth, float columnSpacing, int peristyle){
+		GameObject base1 = Make(this.TempleBase, this.temple_base);
+		GameObject base2 = Make(this.TempleBase, this.temple_base);
+		GameObject base3 = Make(this.TempleBase, this.temple_base);
+
+		float horizontal  = (this.columnDiameter*(float)this.numColumns + this.columnSpacing * ((float)this.numColumns - 1.0f));
+		float halfHoriz = horizontal/2.0f;
+
+		
+		float vertical = (this.columnDiameter*(float)this.columnDepth + this.columnSpacing * ((float)this.columnDepth - 1.0f));
+		float halfVert = vertical / 2.0f;
+
+
+		// only need horizontal and vertical here //
+		base1.transform.localScale = new Vector3(horizontal, 1.0f, vertical);
+		base2.transform.localScale = new Vector3(horizontal+2.0f, 1.0f, vertical+2.0f);
+		base3.transform.localScale = new Vector3(horizontal+4.0f, 1.0f, vertical+4.0f);
+
+		base1.transform.position = new Vector3(0.0f, -0.5f, 0.0f);
+		base2.transform.position = new Vector3(0.0f, -1.5f, 0.0f);
+		base3.transform.position = new Vector3(0.0f, -2.5f, 0.0f);
 
 	}
 
@@ -159,30 +192,53 @@ public class UIControlScript : MonoBehaviour {
 		GameObject columnCapital = CapitalIonic;
 		//Above two lines of code are temporary!  Fix them later!  Implement dynamic stuff.
 
+
+
 		for(int i = 0; i<numColumns; i++){
-			GameObject column = Make(currentFluting);
-			GameObject column2 = Make(currentFluting);
-
+			GameObject column = Make(currentFluting, temple_columns);
 			sizeColumn(column);
-			sizeColumn(column2);
+			placeColumn(column, i, 0);
 
-			placeColumnFront(column, i);
-			placeColumnBack(column2, i);
-
+			if(amphi || this.peristyle == 1){
+				GameObject column2 = Make(currentFluting, temple_columns);
+				sizeColumn(column2);
+				placeColumn(column2, i, columnDepth - 1);
+			}
 		}
+
+		if(this.peristyle == 1){
+			for(int i=1; i<columnDepth-1; i++){
+				GameObject column = Make(currentFluting, temple_columns);
+				sizeColumn(column);
+				placeColumn(column, 0, i);
+
+				GameObject column2 = Make(currentFluting, temple_columns);
+				sizeColumn(column2);
+				placeColumn(column2, numColumns - 1, i);
+			}
+		}
+
+		//add code to create columns in antis inside peristyle
 	}
 
 	public void sizeColumn(GameObject column){
-		column.transform.localScale = new Vector3(columnDiameter, columnHeight, columnDiameter);
+		column.transform.localScale = new Vector3(columnDiameter/2.0f, columnHeight, columnDiameter/2.0f);
 	}
 	
-	public void placeColumnFront(GameObject column, int num){
-		
+	public void placeColumn(GameObject column, int num, int depth){
+		float horizontal  = (this.columnDiameter*(float)this.numColumns + this.columnSpacing * ((float)this.numColumns - 1.0f));
+		float halfHoriz = horizontal/2.0f;
+		float moveHoriz = this.columnDiameter*(float)num + this.columnSpacing*(float)num;
+		float x = moveHoriz - halfHoriz;
+
+		float vertical = (this.columnDiameter*(float)this.columnDepth + this.columnSpacing * ((float)this.columnDepth - 1.0f));
+		float halfVert = vertical / 2.0f;
+		float moveVert = this.columnDiameter*(float)depth + this.columnSpacing*(float)depth;
+		float z = moveVert - halfVert;
+
+		column.transform.position = new Vector3(x, this.columnHeight/2, z);
 	}
-	
-	public void placeColumnBack(GameObject column, int num){
-		
-	}
+
 
 	/* Create Walls */
 
@@ -195,6 +251,15 @@ public class UIControlScript : MonoBehaviour {
 	}
 
 	public void MakeRoof(int numColumns, int columnDepth, float columnHeight, float columnSpacing, float peristyle){
+
+	}
+
+	public void destroyChildren(GameObject parent){
+		/*var children = new List<GameObject>();
+		foreach(Transform child in parent.transform){
+			children.Add(child.gameObject);
+		}
+		children.ForEach(child => Destroy(child));*/
 
 	}
 }
