@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: ae6c7a6303169465eae4af62e3c2655b
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - ColumnZero: {fileID: 100000, guid: 15721438c8c8049a49ef3384e18841ca, type: 3}
+  - ColumnSixteen: {fileID: 100000, guid: 9f9da3458cb8b4e90b5cc1739084e218, type: 3}
+  - ColumnTwenty: {fileID: 100000, guid: 1157668d825cf4554ab630d46602796d, type: 3}
+  - ColumnTwentyFour: {fileID: 100000, guid: b68593cd5539a4b16b83d23569438b4f, type: 3}
+  - Pediment: {fileID: 100010, guid: 5d64d38e542d544e4b79c87b6ab3e889, type: 3}
+  - Roof: {fileID: 100006, guid: 3f5b5041058254b1680656e688a8ab38, type: 3}
+  - CellaWalls: {fileID: 100000, guid: e13d2da47c0f44cbb991e258b2114a18, type: 3}
+  - TempleBase: {fileID: 100000, guid: e13d2da47c0f44cbb991e258b2114a18, type: 3}
+  - CapitalDoric: {instanceID: 0}
+  - CapitalIonic: {instanceID: 0}
+  - CapitalCorinthian: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
