@@ -11,9 +11,12 @@ MonoImporter:
   - Roof: {fileID: 100006, guid: 3f5b5041058254b1680656e688a8ab38, type: 3}
   - CellaWalls: {fileID: 100000, guid: e13d2da47c0f44cbb991e258b2114a18, type: 3}
   - TempleBase: {fileID: 100000, guid: e13d2da47c0f44cbb991e258b2114a18, type: 3}
-  - CapitalDoric: {instanceID: 0}
-  - CapitalIonic: {instanceID: 0}
-  - CapitalCorinthian: {instanceID: 0}
+  - CapitalDoric: {fileID: 100000, guid: b57c114d40a9849be82188630de39294, type: 3}
+  - CapitalIonic: {fileID: 100000, guid: 834e862f0da8d4866a7d7deef94039bb, type: 3}
+  - CapitalIonicDiagonal: {instanceID: 0}
+  - CapitalCorinthian: {fileID: 100000, guid: f8ae29daac14b41ba936fe58cb704ce7, type: 3}
+  - Metope: {fileID: 100000, guid: 763e4a90b326e48939bbc0990ba53eb0, type: 3}
+  - Triglyph: {fileID: 100038, guid: 44f0a5639b83240f3927061fdf52a82a, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
