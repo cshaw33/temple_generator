@@ -64,21 +64,22 @@ public class UIControlScript : MonoBehaviour {
 	public Toggle SpaceDia;
 	public Toggle SpaceAraeo;
 
-	private int numColumns;
-	private int columnDepth;
-	private float columnHeight;
-	private float columnSpacing;
+	public int numColumns;
+	public int columnDepth;
+	public float columnHeight;
+	public float columnSpacing;
 	private GameObject currentCapital;
 	private GameObject currentFluting;
 
-	private float module;
-	private float columnDiameter;
-	private float intercolumnation;
+	public float module;
+	public float columnDiameter;
+	public float intercolumnation;
 
-	private bool amphi;
-	private bool prostyle;
-	private bool peristyle;
-	private bool columnDepthIsAuto;
+	public bool antis;
+	public bool amphi;
+	public bool prostyle;
+	public bool peristyle;
+	public bool columnDepthIsAuto;
 
 	private GameObject temple;
 	private GameObject temple_columns;
@@ -87,17 +88,24 @@ public class UIControlScript : MonoBehaviour {
 	private GameObject temple_walls;
 	private GameObject temple_base;
 
+	public float baseWidth;
+	public float baseLength;
+	public float columnWidth;//this will only be different if temple is in antis but not prostyle or peristyle
+	public float columnLength;
+	public float cellaWidth;
+	public float cellaLength;
+	public Vector3 cellaPosition;
+	public Vector3 basePosition;
 
 
-
-
-	//public GameObject entablature?  Have to figure that out.  
-
+	
 	// Use this for initialization
 	void Start () {
 		module = 1.0f;
-		columnDiameter = 2.0f *module;
-		columnHeight = 6.0f*columnDiameter;
+		columnDiameter = module * 2.0f;
+		columnHeight = columnDiameter * 3.0f;
+
+		antis = true;
 		amphi = false;
 		prostyle = false;
 		columnDepthIsAuto = true;
@@ -107,8 +115,8 @@ public class UIControlScript : MonoBehaviour {
 
 		numColumns = 2;
 		columnDepth = 5;
-		columnHeight = 6;
-		columnSpacing = 2.25f;
+		//columnHeight = 6;
+		columnSpacing = 2.25f * module;
 		peristyle = false;
 
 		temple = new GameObject();
@@ -124,9 +132,8 @@ public class UIControlScript : MonoBehaviour {
 		temple_walls.transform.parent = temple.transform;
 		temple_base.transform.parent = temple.transform;
 
-		//this.Distyle.onValueChanged.AddListener((value) => {setNumColumns(value);});
 
-		//ShowTemple();
+		ShowTemple();
 		
 	}
 	
@@ -135,6 +142,8 @@ public class UIControlScript : MonoBehaviour {
 		//if stuff changed, update variables based on those changes.
 	}
 
+
+	/* Functions that are hooked up to check boxes on UI. */
 	public void setDistyle(bool t){numColumns = 2; ShowTemple();}
 	public void setTetrastyle(bool t){numColumns = 4; ShowTemple();}
 	public void setHexastyle(bool t){numColumns = 6; ShowTemple();}
@@ -147,8 +156,19 @@ public class UIControlScript : MonoBehaviour {
 	public void setIonic(bool t){currentCapital = CapitalIonic; ShowTemple();}
 	public void setCorinthian(bool t){currentCapital = CapitalCorinthian; ShowTemple();}
 
-	public void setAntis(bool t){}
-	public void setProstyle(bool t){prostyle = true; ShowTemple();}
+	public void setAntis(bool t){antis = t; ShowTemple();}
+
+	public void setProstyle(bool t){
+		//enable Amphiprostyle if Prostyle is checked
+		prostyle = t; DivAmphiprostyle.interactable = t;
+		if(!t){
+			amphi = t;
+			this.Frontal.SetAllTogglesOff();
+		}
+		ShowTemple();
+	}
+
+	public void setAmphi(bool t){amphi = t; ShowTemple();}
 
 	public void setUnfluted(bool t){currentFluting = ColumnZero; ShowTemple();}
 	public void setFlutedSixteen(bool t){currentFluting = ColumnSixteen; ShowTemple();}
@@ -156,8 +176,13 @@ public class UIControlScript : MonoBehaviour {
 	public void setFlutedTwentyFour(bool t){currentFluting = ColumnTwentyFour; ShowTemple();}
 
 	public void setPeristyleNone(bool t){peristyle = false; ShowTemple();}
-	public void setPeristylePeripteral(bool t){peristyle = true; ShowTemple();}
+	public void setPeristylePeripteral(bool t){peristyle = t; ShowTemple();}
 
+	public void setPycnostyle(bool t){columnSpacing = 1.5f; ShowTemple();}
+	public void setSystyle(bool t){columnSpacing = 2.0f; ShowTemple();}
+	public void setEustyle(bool t){columnSpacing = 2.25f; ShowTemple();}
+	public void setDiastyle(bool t){columnSpacing = 3.0f; ShowTemple();}
+	public void setAraeostyle(bool t){columnSpacing = 3.5f; ShowTemple();}
 
 
 
@@ -173,15 +198,29 @@ public class UIControlScript : MonoBehaviour {
 
 		UpdateDepth();
 
+		//process dimensions to be used in creating parts of temple
+		PreprocessDimensions();
+
 		MakeBase(numColumns, columnDepth, columnSpacing, peristyle);
 		MakeColumns(numColumns, columnDepth, columnHeight, columnSpacing, peristyle);
 		MakeWalls(numColumns, columnDepth, columnHeight, columnSpacing, peristyle);
 
-		temple_walls.transform.localScale = new Vector3(1,columnHeight, 1);
-		temple_walls.transform.position = new Vector3(0, columnHeight/2, 0);
+		//temple_walls.transform.localScale = new Vector3(1,columnHeight, 1);
+		//temple_walls.transform.position = new Vector3(0, columnHeight, 0);
 
 		MakeEntablature(numColumns, columnDepth, columnHeight, columnSpacing, peristyle);
 		MakeRoof(numColumns, columnDepth, columnHeight, columnSpacing, peristyle);
+	}
+
+	public void PreprocessDimensions(){
+
+
+		baseWidth  = (this.columnDiameter*(float)this.numColumns + this.columnSpacing * ((float)this.numColumns - 1.0f));
+		baseLength = (this.columnDiameter*(float)this.columnDepth + this.columnSpacing * ((float)this.columnDepth - 1.0f));
+		columnWidth = (this.columnDiameter*(float)this.numColumns + this.columnSpacing * ((float)this.numColumns - 1.0f));
+		columnLength = (this.columnDiameter*(float)this.columnDepth + this.columnSpacing * ((float)this.columnDepth - 1.0f));
+
+		//cella-width is determined by 
 	}
 
 	public void UpdateDepth(){
@@ -206,18 +245,19 @@ public class UIControlScript : MonoBehaviour {
 		GameObject base2 = Make(this.TempleBase, this.temple_base);
 		GameObject base3 = Make(this.TempleBase, this.temple_base);
 
-		float horizontal  = (this.columnDiameter*(float)this.numColumns + this.columnSpacing * ((float)this.numColumns - 1.0f));
-		float halfHoriz = horizontal/2.0f;
+		//float horizontal  = (this.columnDiameter*(float)this.numColumns + this.columnSpacing * ((float)this.numColumns - 1.0f));
+		//float vertical = (this.columnDiameter*(float)this.columnDepth + this.columnSpacing * ((float)this.columnDepth - 1.0f));
 
-		
-		float vertical = (this.columnDiameter*(float)this.columnDepth + this.columnSpacing * ((float)this.columnDepth - 1.0f));
-		float halfVert = vertical / 2.0f;
+		if(antis && !prostyle){
+			baseWidth = (this.columnDiameter*(float)(this.numColumns+2.0f) + this.columnSpacing*((float)(this.numColumns+1.0f)));
+
+		}
 
 
 		// only need horizontal and vertical here //
-		base1.transform.localScale = new Vector3(horizontal, 1.0f, vertical);
-		base2.transform.localScale = new Vector3(horizontal+2.0f, 1.0f, vertical+2.0f);
-		base3.transform.localScale = new Vector3(horizontal+4.0f, 1.0f, vertical+4.0f);
+		base1.transform.localScale = new Vector3(baseWidth, 1.0f, baseLength);
+		base2.transform.localScale = new Vector3(baseWidth+2.0f, 1.0f, baseLength+2.0f);
+		base3.transform.localScale = new Vector3(baseWidth+4.0f, 1.0f, baseLength+4.0f);
 
 		base1.transform.position = new Vector3(0.0f, -0.5f, 0.0f);
 		base2.transform.position = new Vector3(0.0f, -1.5f, 0.0f);
@@ -229,11 +269,9 @@ public class UIControlScript : MonoBehaviour {
 
 	public void MakeColumns(int numColumns, int columnDepth, float height, float spacing, bool peristyle){
 
-		GameObject columnType = ColumnSixteen;
-		GameObject columnCapital = CapitalIonic;
+		//GameObject columnType = ColumnSixteen;
+		//GameObject columnCapital = CapitalIonic;
 		//Above two lines of code are temporary!  Fix them later!  Implement dynamic stuff.
-
-
 
 		for(int i = 0; i<numColumns; i++){
 			GameObject column = MakeColumn(currentFluting, currentCapital, temple_columns);
@@ -257,6 +295,26 @@ public class UIControlScript : MonoBehaviour {
 				placeColumn(column2, numColumns - 1, i);
 			}
 		}
+
+		if(antis){
+
+			if(peristyle || prostyle){
+				for (int i=1; i<numColumns-1; i++){
+					GameObject column = MakeColumn(currentFluting, currentCapital, temple_columns);
+					rotate90(column);
+					placeColumn(column, i, 1);
+				}
+			}
+
+			else{
+				for (int i=0; i<numColumns; i++){
+					GameObject column = MakeColumn(currentFluting, currentCapital, temple_columns);
+					rotate90(column);
+					placeColumn(column, i, 0);
+				}
+			}
+		}
+
 
 		//add code to create columns in antis inside peristyle
 	}
@@ -313,6 +371,18 @@ public class UIControlScript : MonoBehaviour {
 
 		float unit = this.columnDiameter+this.intercolumnation;
 
+		if(antis && (!peristyle && !prostyle)){
+			horizontal = (this.columnDiameter*(float)(this.numColumns+2) + this.columnSpacing * ((float)this.numColumns+1));
+			vertical = (this.columnDiameter*(float)(this.columnDepth-1) + this.columnSpacing*((float)this.columnDepth-1));
+			backWall.transform.localScale = new Vector3(horizontal - columnDiameter/2.0f, 1.0f, 1.0f);
+			leftWall.transform.localScale = new Vector3(1.0f, 1.0f, vertical);
+			rightWall.transform.localScale = new Vector3(1.0f, 1.0f, vertical);
+
+			backWall.transform.position = new Vector3(0.0f, 0.0f, vertical/2 - 1.0f);
+			leftWall.transform.position = new Vector3(-1*(horizontal/2.0f - columnDiameter/2.0f), 0.0f, -1.0f);
+			rightWall.transform.position = new Vector3(horizontal/2.0f - columnDiameter/2.0f, 0.0f, -1.0f);
+		}
+
 		if(peristyle || amphi){
 
 			vertical = (this.columnDiameter*(float)(this.columnDepth - 2) + this.columnSpacing * ((float)this.columnDepth - 3));
@@ -321,8 +391,10 @@ public class UIControlScript : MonoBehaviour {
 			leftWall.transform.localScale = new Vector3(1.0f, 1.0f, vertical);
 			rightWall.transform.localScale = new Vector3(1.0f, 1.0f, vertical);
 
-			horizontal = (this.columnDiameter*(float)(numColumns - 2) + this.columnSpacing * ((float) this.numColumns - 3.0f));
-			halfHoriz = horizontal/2.0f;
+			if(peristyle){
+				horizontal = (this.columnDiameter*(float)(numColumns - 2) + this.columnSpacing * ((float) this.numColumns - 3.0f));
+				halfHoriz = horizontal/2.0f;
+			}
 
 			backWall.transform.localScale = new Vector3(horizontal-3.0f, 1.0f, 1.0f);
 
@@ -332,7 +404,10 @@ public class UIControlScript : MonoBehaviour {
 			rightWall.transform.position = new Vector3(move, 0.0f, 0.0f);
 
 			backWall.transform.position = new Vector3(0.0f, 0.0f, halfVert-0.5f);
+
+
 		}
+
 
 		else if(!amphi && prostyle){
 			vertical = (this.columnDiameter * (float)(this.columnDepth -1) + this.columnSpacing *((float)this.columnDepth - 2));
@@ -346,6 +421,14 @@ public class UIControlScript : MonoBehaviour {
 			backWall.transform.localScale = new Vector3(horizontal - 3.0f, 1.0f, 1.0f);
 			backWall.transform.position = new Vector3(0.0f, 0.0f, halfVert + 0.5f);
 		}
+
+		leftWall.transform.localScale = new Vector3(leftWall.transform.localScale.x, columnHeight + 2.0f, leftWall.transform.localScale.z);
+		rightWall.transform.localScale = new Vector3(rightWall.transform.localScale.x, columnHeight + 2.0f, rightWall.transform.localScale.z);
+		backWall.transform.localScale = new Vector3(backWall.transform.localScale.x, columnHeight + 2.0f, backWall.transform.localScale.z);
+
+		leftWall.transform.position = new Vector3(leftWall.transform.position.x, columnHeight/2.0f + 1.0f, leftWall.transform.position.z);
+		rightWall.transform.position = new Vector3(rightWall.transform.position.x, columnHeight/2.0f + 1.0f, rightWall.transform.position.z);
+		backWall.transform.position = new Vector3(backWall.transform.position.x, columnHeight/2.0f + 1.0f, backWall.transform.position.z);
 	}
 
 	public void MakeEntablature(int numColumns, int columnDepth, float columnHeight, float columnSpacing, bool peristyle){
