@@ -68,9 +68,7 @@ public class UIControlScript : MonoBehaviour {
 	private int columnDepth;
 	private float columnHeight;
 	private float columnSpacing;
-	private int columnOrder;
 	private GameObject currentCapital;
-	private int columnFluting;
 	private GameObject currentFluting;
 
 	private float module;
@@ -80,6 +78,7 @@ public class UIControlScript : MonoBehaviour {
 	private bool amphi;
 	private bool prostyle;
 	private bool peristyle;
+	private bool columnDepthIsAuto;
 
 	private GameObject temple;
 	private GameObject temple_columns;
@@ -100,17 +99,16 @@ public class UIControlScript : MonoBehaviour {
 		columnDiameter = 2.0f *module;
 		columnHeight = 6.0f*columnDiameter;
 		amphi = false;
-		prostyle = true;
+		prostyle = false;
+		columnDepthIsAuto = true;
 
-		currentFluting = ColumnTwentyFour;
-		currentCapital = CapitalCorinthian;
+		currentFluting = ColumnSixteen;
+		currentCapital = CapitalDoric;
 
-		numColumns = 6;
-		columnDepth = 13;
+		numColumns = 2;
+		columnDepth = 5;
 		columnHeight = 6;
 		columnSpacing = 2.25f;
-		columnOrder = 0;
-		columnFluting = 1;
 		peristyle = false;
 
 		temple = new GameObject();
@@ -126,7 +124,9 @@ public class UIControlScript : MonoBehaviour {
 		temple_walls.transform.parent = temple.transform;
 		temple_base.transform.parent = temple.transform;
 
-		ShowTemple();
+		//this.Distyle.onValueChanged.AddListener((value) => {setNumColumns(value);});
+
+		//ShowTemple();
 		
 	}
 	
@@ -134,6 +134,33 @@ public class UIControlScript : MonoBehaviour {
 	void Update () {
 		//if stuff changed, update variables based on those changes.
 	}
+
+	public void setDistyle(bool t){numColumns = 2; ShowTemple();}
+	public void setTetrastyle(bool t){numColumns = 4; ShowTemple();}
+	public void setHexastyle(bool t){numColumns = 6; ShowTemple();}
+	public void setOctastyle(bool t){numColumns = 8; ShowTemple();}
+
+	public void setColumnDepthStandard(bool t){columnDepth = numColumns*2 + 1; columnDepthIsAuto = true; ShowTemple();}
+	public void setColumnDepthCustom(bool t){columnDepthIsAuto = false; ShowTemple();}
+
+	public void setDoric(bool t){currentCapital = CapitalDoric; ShowTemple();}
+	public void setIonic(bool t){currentCapital = CapitalIonic; ShowTemple();}
+	public void setCorinthian(bool t){currentCapital = CapitalCorinthian; ShowTemple();}
+
+	public void setAntis(bool t){}
+	public void setProstyle(bool t){prostyle = true; ShowTemple();}
+
+	public void setUnfluted(bool t){currentFluting = ColumnZero; ShowTemple();}
+	public void setFlutedSixteen(bool t){currentFluting = ColumnSixteen; ShowTemple();}
+	public void setFlutedTwenty(bool t){currentFluting = ColumnTwenty; ShowTemple();}
+	public void setFlutedTwentyFour(bool t){currentFluting = ColumnTwentyFour; ShowTemple();}
+
+	public void setPeristyleNone(bool t){peristyle = false; ShowTemple();}
+	public void setPeristylePeripteral(bool t){peristyle = true; ShowTemple();}
+
+
+
+
 
 	public void ShowTemple(){
 
@@ -144,15 +171,23 @@ public class UIControlScript : MonoBehaviour {
 		destroyChildren(temple_walls);
 		destroyChildren(temple_base);
 
+		UpdateDepth();
+
 		MakeBase(numColumns, columnDepth, columnSpacing, peristyle);
 		MakeColumns(numColumns, columnDepth, columnHeight, columnSpacing, peristyle);
 		MakeWalls(numColumns, columnDepth, columnHeight, columnSpacing, peristyle);
 
-		temple_walls.transform.localScale = new Vector3(1,this.columnHeight, 1);
-		temple_walls.transform.position = new Vector3(0, this.columnHeight/2, 0);
+		temple_walls.transform.localScale = new Vector3(1,columnHeight, 1);
+		temple_walls.transform.position = new Vector3(0, columnHeight/2, 0);
 
 		MakeEntablature(numColumns, columnDepth, columnHeight, columnSpacing, peristyle);
 		MakeRoof(numColumns, columnDepth, columnHeight, columnSpacing, peristyle);
+	}
+
+	public void UpdateDepth(){
+		if (columnDepthIsAuto){
+			columnDepth = numColumns * 2 + 1;
+		}
 	}
 
 	public GameObject Make(GameObject go){
@@ -213,6 +248,7 @@ public class UIControlScript : MonoBehaviour {
 		}
 
 		if(this.peristyle){
+			if(numColumns ==2) return;
 			for(int i=1; i<columnDepth-1; i++){
 				GameObject column = MakeColumn(currentFluting, currentCapital, temple_columns);
 				placeColumn(column, 0, i);
@@ -326,6 +362,10 @@ public class UIControlScript : MonoBehaviour {
 			children.Add(child.gameObject);
 		}
 		children.ForEach(child => Destroy(child));*/
+		int numChillins = parent.transform.childCount;
+		for(int i=numChillins-1; i>-1; i--){
+			GameObject.Destroy(parent.transform.GetChild(i).gameObject);
+		}
 
 	}
 }
