@@ -433,6 +433,23 @@ public class UIControlScript : MonoBehaviour {
 
 	public void MakeEntablature(int numColumns, int columnDepth, float columnHeight, float columnSpacing, bool peristyle){
 
+		//makeArchitraves//
+		float horizontal = (columnDiameter*(float)numColumns + columnSpacing*(float)(numColumns-1));
+
+		if(antis && (!prostyle && !peristyle)){
+			//architrave needs to be wider for this case only
+
+			horizontal = (columnDiameter * (float)numColumns + columnSpacing*(float)numColumns+1);
+		}
+
+
+		else{
+
+		}
+
+		GameObject architrave = Make(CellaWalls, temple_entablature);
+
+
 	}
 
 	public void MakeRoof(int numColumns, int columnDepth, float columnHeight, float columnSpacing, bool peristyle){
