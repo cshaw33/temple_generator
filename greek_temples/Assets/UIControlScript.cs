@@ -24,6 +24,11 @@ public class UIControlScript : MonoBehaviour {
 	public GameObject Metope;
 	public GameObject Triglyph;
 
+	public GameObject ControlPanel;
+	public GameObject NavigationPanel;
+
+	private bool interfaceOn;
+
 	public Button Generate;
 
 	public ToggleGroup NumColumns;
@@ -103,6 +108,9 @@ public class UIControlScript : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
+
+		interfaceOn = true;
+
 		module = 1.0f;
 		columnDiameter = module * 2.0f;
 		columnHeight = columnDiameter * 3.0f;
@@ -186,7 +194,12 @@ public class UIControlScript : MonoBehaviour {
 	public void setDiastyle(bool t){columnSpacing = 3.0f; ShowTemple();}
 	public void setAraeostyle(bool t){columnSpacing = 3.5f; ShowTemple();}
 
+	public void ToggleInterface(){
 
+		interfaceOn = !interfaceOn;
+		ControlPanel.SetActive(interfaceOn);
+		NavigationPanel.SetActive(interfaceOn);
+	}	
 
 
 	public void ShowTemple(){
