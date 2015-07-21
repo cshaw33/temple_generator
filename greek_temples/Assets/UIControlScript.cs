@@ -112,7 +112,7 @@ public class UIControlScript : MonoBehaviour {
 		prostyle = false;
 		columnDepthIsAuto = true;
 
-		currentFluting = ColumnSixteen;
+		currentFluting = ColumnZero;
 		currentCapital = CapitalDoric;
 
 		numColumns = 2;
