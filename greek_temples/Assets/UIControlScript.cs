@@ -248,7 +248,7 @@ public class UIControlScript : MonoBehaviour {
 		//float horizontal  = (this.columnDiameter*(float)this.numColumns + this.columnSpacing * ((float)this.numColumns - 1.0f));
 		//float vertical = (this.columnDiameter*(float)this.columnDepth + this.columnSpacing * ((float)this.columnDepth - 1.0f));
 
-		if(antis && !prostyle){
+		if(antis && (!peristyle && !prostyle)){
 			baseWidth = (this.columnDiameter*(float)(this.numColumns+2.0f) + this.columnSpacing*((float)(this.numColumns+1.0f)));
 
 		}
@@ -298,7 +298,15 @@ public class UIControlScript : MonoBehaviour {
 
 		if(antis){
 
-			if(peristyle || prostyle){
+			if(peristyle){
+				for(int i=2; i<numColumns - 2; i++){
+					GameObject column = MakeColumn(currentFluting, currentCapital, temple_columns);
+					rotate90(column);
+					placeColumn(column, i, 1);
+				}
+			}
+
+			else if(prostyle){
 				for (int i=1; i<numColumns-1; i++){
 					GameObject column = MakeColumn(currentFluting, currentCapital, temple_columns);
 					rotate90(column);
@@ -373,14 +381,14 @@ public class UIControlScript : MonoBehaviour {
 
 		if(antis && (!peristyle && !prostyle)){
 			horizontal = (this.columnDiameter*(float)(this.numColumns+2) + this.columnSpacing * ((float)this.numColumns+1));
-			vertical = (this.columnDiameter*(float)(this.columnDepth-1) + this.columnSpacing*((float)this.columnDepth-1));
+			//vertical = (this.columnDiameter*(float)(this.columnDepth-1) + this.columnSpacing*((float)this.columnDepth-1));
 			backWall.transform.localScale = new Vector3(horizontal - columnDiameter/2.0f, 1.0f, 1.0f);
-			leftWall.transform.localScale = new Vector3(1.0f, 1.0f, vertical);
-			rightWall.transform.localScale = new Vector3(1.0f, 1.0f, vertical);
+			leftWall.transform.localScale = new Vector3(1.0f, 1.0f, vertical - 1.0f);
+			rightWall.transform.localScale = new Vector3(1.0f, 1.0f, vertical - 1.0f);
 
-			backWall.transform.position = new Vector3(0.0f, 0.0f, vertical/2 - 1.0f);
-			leftWall.transform.position = new Vector3(-1*(horizontal/2.0f - columnDiameter/2.0f), 0.0f, -1.0f);
-			rightWall.transform.position = new Vector3(horizontal/2.0f - columnDiameter/2.0f, 0.0f, -1.0f);
+			backWall.transform.position = new Vector3(0.0f, 0.0f, vertical/2 - 1);
+			leftWall.transform.position = new Vector3(-1*(horizontal/2.0f - columnDiameter/2.0f), 0.0f, 0.0f);
+			rightWall.transform.position = new Vector3(horizontal/2.0f - columnDiameter/2.0f, 0.0f, 0.0f);
 		}
 
 		if(peristyle || amphi){
@@ -418,8 +426,8 @@ public class UIControlScript : MonoBehaviour {
 			leftWall.transform.position = new Vector3(-1*(halfHoriz - columnDiameter/2.0f), 0.0f, unit);
 			rightWall.transform.position = new Vector3(halfHoriz - columnDiameter/2.0f, 0.0f, unit);
 
-			backWall.transform.localScale = new Vector3(horizontal - 3.0f, 1.0f, 1.0f);
-			backWall.transform.position = new Vector3(0.0f, 0.0f, halfVert + 0.5f);
+			backWall.transform.localScale = new Vector3(horizontal - 1.0f, 1.0f, 1.0f);
+			backWall.transform.position = new Vector3(0.0f, 0.0f, halfVert + 1f);
 		}
 
 		leftWall.transform.localScale = new Vector3(leftWall.transform.localScale.x, columnHeight + 2.0f, leftWall.transform.localScale.z);
@@ -434,74 +442,31 @@ public class UIControlScript : MonoBehaviour {
 	public void MakeEntablature(int numColumns, int columnDepth, float columnHeight, float columnSpacing, bool peristyle){
 
 		//makeArchitraves//
-		float horizontal = 1;
+		float horizontal = (columnDiameter*(float)numColumns + columnSpacing*(float)(numColumns-1));
 		float vertical = (columnDiameter * (float)columnDepth + columnSpacing*(float)(columnDepth - 1));
 
-		if(!antis){
-			horizontal = (columnDiameter*(float)numColumns + columnSpacing*(float)(numColumns-1));
-
-			//make front architrave
-
-			GameObject architraveFront = Make(CellaWalls, temple_entablature);
-			GameObject architraveFrontLeft = Make(CellaWalls, temple_entablature);
-			GameObject architraveFrontRight = Make(CellaWalls, temple_entablature);
-
-			architraveFront.transform.localScale = new Vector3(horizontal - 1.0f, 2.0f, 1.0f);
-			architraveFrontLeft.transform.localScale = new Vector3(1.0f, 2.0f, columnSpacing+ columnDiameter/2.0f);
-			architraveFrontRight.transform.localScale = new Vector3(1.0f, 2.0f, columnSpacing + columnDiameter/2.0f);
-
-			PlaceArchitraveFront(architraveFront, architraveFrontLeft, architraveFrontRight, 0);
-
-			if(amphi || peristyle){
-				//make rear architrave
-
-				GameObject architraveBack = Make(CellaWalls, temple_entablature);
-				GameObject architraveBackLeft = Make(CellaWalls, temple_entablature);
-				GameObject architraveBackRight = Make(CellaWalls, temple_entablature);
-
-				architraveBack.transform.localScale = new Vector3(horizontal-1.0f, 2.0f, 1.0f);
-				architraveBackLeft.transform.localScale = new Vector3(1.0f, 2.0f, columnSpacing + columnDiameter/2.0f);
-				architraveBackRight.transform.localScale = new Vector3(1.0f, 2.0f, columnSpacing + columnDiameter/2.0f);
-
-				PlaceArchitraveBack(architraveBack, architraveBackLeft, architraveBackRight, columnDepth-1);
-
-				if(peristyle){
-					//make side architraves
-					GameObject architraveLeft = Make(CellaWalls, temple_entablature);
-					GameObject architraveRight = Make(CellaWalls, temple_entablature);
-
-					architraveLeft.transform.localScale = new Vector3(1.0f, 2.0f, vertical - 1.0f);
-					architraveRight.transform.localScale = new Vector3(1.0f, 2.0f, vertical - 1.0f);
-
-					PlaceArchitravesSides(architraveLeft, architraveRight);
-
-					//architraveLeft.transform.localScale = new Vector3(1.0f, 
-					//////////////////////
-
-				}
+		if(antis){
+			if(!peristyle && !prostyle){
+				horizontal = (columnDiameter * (float)(numColumns + 2) + columnSpacing*(float)(numColumns+1));
 			}
-
 		}
-		else{
-			//in antis
 
-			if(prostyle || amphi){
-				//make front and antis architraves
+		GameObject architraveFront = Make(CellaWalls, temple_entablature);
+		GameObject architraveLeft = Make(CellaWalls, temple_entablature);
+		GameObject architraveRight = Make(CellaWalls, temple_entablature);
+		GameObject architraveBack = Make(CellaWalls, temple_entablature);
+		
+		architraveFront.transform.localScale = new Vector3(horizontal - 1.0f, 2.0f, 1.0f);
+		architraveLeft.transform.localScale = new Vector3(1.0f, 2.0f, vertical - 1.0f);
+		architraveRight.transform.localScale = new Vector3(1.0f, 2.0f, vertical - 1.0f);
+		architraveBack.transform.localScale = new Vector3(horizontal - 1.0f, 2.0f, 1.0f);
+		
+		PlaceArchitrave(architraveFront, 0);
+		PlaceArchitrave(architraveBack, columnDepth-1);
+		PlaceArchitravesSides(architraveLeft, architraveRight, antis);
 
-				if(amphi){
-					//make rear architrave
-				}
-			}
 
-			if(peristyle){
-				//make front, antis, rear, and side architraves
 
-			}
-			if(!prostyle && (!amphi && ! peristyle)){
-
-			}
-
-		}
 
 	}
 
@@ -521,50 +486,15 @@ public class UIControlScript : MonoBehaviour {
 
 		architrave.transform.localPosition = new Vector3(0.0f, columnHeight + 2.0f, z);
 	}
-
-	public void PlaceArchitraveFront(GameObject center, GameObject left, GameObject right, int row){
-		PlaceArchitrave(center, row);
-
-		float horizontal  = (this.columnDiameter*(float)this.numColumns + this.columnSpacing * ((float)this.numColumns - 1.0f));
-		float halfHoriz = horizontal/2.0f;
-
-		float moveHorizLeft = this.columnDiameter*(float)0 + this.columnSpacing*(float)0;
-
-		float xLeft = moveHorizLeft - halfHoriz + (this.columnDiameter/2.0f);
-		float xRight = -1 * xLeft;
-		
-		float vertical = (this.columnDiameter*(float)this.columnDepth + this.columnSpacing * ((float)this.columnDepth - 1.0f));
-		float halfVert = vertical / 2.0f;
-		float moveVert = this.columnDiameter*(float)(row + .5f) + this.columnSpacing*(float)(row+.5f);
-		float z = moveVert - halfVert + (this.columnDiameter/2.0f);
-
-		left.transform.localPosition = new Vector3(xLeft, columnHeight + 2.0f, z);
-		right.transform.localPosition = new Vector3(xRight, columnHeight+ 2.0f, z);
-
-	}
-
-	public void PlaceArchitraveBack(GameObject center, GameObject left, GameObject right, int row){
-		PlaceArchitrave(center, row);
-
-		float horizontal  = (this.columnDiameter*(float)this.numColumns + this.columnSpacing * ((float)this.numColumns - 1.0f));
-		float halfHoriz = horizontal/2.0f;
-		
-		float moveHorizLeft = this.columnDiameter*(float)0 + this.columnSpacing*(float)0;
-
-		float xLeft = moveHorizLeft - halfHoriz + (this.columnDiameter/2.0f);
-		float xRight = -1 * xLeft;
-		
-		float vertical = (this.columnDiameter*(float)this.columnDepth + this.columnSpacing * ((float)this.columnDepth - 1.0f));
-		float halfVert = vertical / 2.0f;
-		float moveVert = this.columnDiameter*(float)(row - .5f) + this.columnSpacing*(float)(row-  .5f);
-		float z = moveVert - halfVert + (this.columnDiameter/2.0f);
-
-		left.transform.localPosition = new Vector3(xLeft, columnHeight + 2.0f, z);
-		right.transform.localPosition = new Vector3(xRight, columnHeight + 2.0f, z);
-	}
-
-	public void PlaceArchitravesSides(GameObject left, GameObject right){
+	
+	public void PlaceArchitravesSides(GameObject left, GameObject right, bool antis){
 		float horiz = (this.columnDiameter*(float)this.numColumns + this.columnSpacing * ((float)this.numColumns - 1.0f));
+		if(antis){
+			if(!peristyle && !prostyle){
+				horiz = this.columnDiameter*(float)(this.numColumns + 2) + this.columnSpacing *((float)this.numColumns + 1.0f);
+	
+			}
+		}
 		float halfHoriz = horiz / 2.0f;
 		float moveHorizLeft = this.columnDiameter*(float)0 + this.columnSpacing*(float)0;
 		float x = moveHorizLeft - halfHoriz + (this.columnDiameter/2.0f);
