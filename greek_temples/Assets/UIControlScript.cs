@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System;
 
 public class UIControlScript : MonoBehaviour {
 	
@@ -34,6 +35,7 @@ public class UIControlScript : MonoBehaviour {
 	public ToggleGroup ColumnDepth;
 	public Toggle CDStandard;
 	public Toggle CDCustom;
+	public InputField CustomField;
 
 	public ToggleGroup TempleOrder;
 	public Toggle OrderDoric;
@@ -149,8 +151,8 @@ public class UIControlScript : MonoBehaviour {
 	public void setHexastyle(bool t){numColumns = 6; ShowTemple();}
 	public void setOctastyle(bool t){numColumns = 8; ShowTemple();}
 
-	public void setColumnDepthStandard(bool t){columnDepth = numColumns*2 + 1; columnDepthIsAuto = true; ShowTemple();}
-	public void setColumnDepthCustom(bool t){columnDepthIsAuto = false; ShowTemple();}
+	public void setColumnDepthStandard(bool t){columnDepth = numColumns*2 + 1; columnDepthIsAuto = t; CustomField.interactable = !t; ShowTemple();}
+	public void setColumnDepthCustom(bool t){columnDepthIsAuto = !t; CustomField.interactable = t; ShowTemple();}
 
 	public void setDoric(bool t){currentCapital = CapitalDoric; ShowTemple();}
 	public void setIonic(bool t){currentCapital = CapitalIonic; ShowTemple();}
@@ -226,6 +228,17 @@ public class UIControlScript : MonoBehaviour {
 	public void UpdateDepth(){
 		if (columnDepthIsAuto){
 			columnDepth = numColumns * 2 + 1;
+		}
+
+		else{
+			string st = CustomField.text;
+			int depth;
+	
+			bool result = Int32.TryParse(st, out depth);
+			if(result){
+				columnDepth = depth;
+			}
+
 		}
 	}
 
@@ -361,6 +374,10 @@ public class UIControlScript : MonoBehaviour {
 
 	public void rotate90(GameObject obj){
 		obj.transform.eulerAngles = new Vector3(transform.eulerAngles.x, 90.0f, transform.eulerAngles.z);
+	}
+
+	public void rotate180(GameObject obj){
+		obj.transform.eulerAngles = new Vector3(transform.eulerAngles.x, 180.0f, transform.eulerAngles.z);
 	}
 
 
@@ -501,10 +518,33 @@ public class UIControlScript : MonoBehaviour {
 
 		left.transform.localPosition = new Vector3(x, columnHeight + 2.0f, 0.0f);
 		right.transform.localPosition = new Vector3(-x, columnHeight + 2.0f, 0.0f);
+
 	}
 
 
 	public void MakeRoof(int numColumns, int columnDepth, float columnHeight, float columnSpacing, bool peristyle){
+		GameObject front_pediment = Make(Pediment, temple_roof);
+		GameObject back_pediment = Make(Pediment, temple_roof);
+		GameObject roof = Make(Roof, temple_roof);
+
+		float horiz = columnDiameter*(float)numColumns + columnSpacing * (float)(numColumns-1);
+		float vert = columnDiameter*(float)columnDepth + columnSpacing * (float)(columnDepth - 1);
+
+		if(antis){
+			if(!peristyle && !prostyle){
+				horiz = (columnDiameter * (float)(numColumns + 2) + columnSpacing*(float)(numColumns+1));
+			}
+		}
+
+		this.rotate180(back_pediment);
+
+		front_pediment.transform.localScale = new Vector3(horiz* 0.8f, horiz/4.0f, 10.0f);
+		back_pediment.transform.localScale = new Vector3(horiz*0.8f, horiz/4.0f, 10.0f);
+		roof.transform.localScale = new Vector3(horiz*0.8f, horiz/4.0f, vert - 1.0f);
+
+		front_pediment.transform.localPosition = new Vector3(0.0f, columnHeight + 3.0f, -1*vert/2.0f);
+		back_pediment.transform.localPosition = new Vector3(0.0f, columnHeight + 3.0f, vert/2.0f);
+		roof.transform.localPosition = new Vector3(0.0f, columnHeight + 3.0f, 0.0f);
 
 	}
 
