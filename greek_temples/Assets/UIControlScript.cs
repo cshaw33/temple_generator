@@ -48,7 +48,9 @@ public class UIControlScript : MonoBehaviour {
 	public Toggle OrderCorinthian;
 
 	public ToggleGroup Frontal;
+	public ToggleGroup DoubleAntisToggleGroup;
 	public Toggle DivAntis;
+	public Toggle DivDoubleAntis;
 	public Toggle DivProstyle;
 	public Toggle DivAmphiprostyle;
 
@@ -83,6 +85,7 @@ public class UIControlScript : MonoBehaviour {
 	public float intercolumnation;
 
 	public bool antis;
+	public bool doubleAntis;
 	public bool amphi;
 	public bool prostyle;
 	public bool peristyle;
@@ -116,6 +119,7 @@ public class UIControlScript : MonoBehaviour {
 		columnHeight = columnDiameter * 3.0f;
 
 		antis = true;
+		doubleAntis = false;
 		amphi = false;
 		prostyle = false;
 		columnDepthIsAuto = true;
@@ -166,11 +170,22 @@ public class UIControlScript : MonoBehaviour {
 	public void setIonic(bool t){currentCapital = CapitalIonic; ShowTemple();}
 	public void setCorinthian(bool t){currentCapital = CapitalCorinthian; ShowTemple();}
 
-	public void setAntis(bool t){antis = t; ShowTemple();}
+	public void setAntis(bool t){
+		antis = t; 
+		DivDoubleAntis.interactable = t;	
+		if(!t){
+			doubleAntis = t;
+			this.DoubleAntisToggleGroup.SetAllTogglesOff();
+		}
+
+		ShowTemple();
+	}
+	public void setDoubleAntis(bool t){doubleAntis = t; ShowTemple();}
 
 	public void setProstyle(bool t){
 		//enable Amphiprostyle if Prostyle is checked
-		prostyle = t; DivAmphiprostyle.interactable = t;
+		prostyle = t; 
+		DivAmphiprostyle.interactable = t;
 		if(!t){
 			amphi = t;
 			this.Frontal.SetAllTogglesOff();
@@ -304,6 +319,12 @@ public class UIControlScript : MonoBehaviour {
 			rotate90(column);
 			placeColumn(column, i, 0);
 
+//			if(antis && doubleAntis){
+//				GameObject column2 = MakeColumn(currentFluting, currentCapital, temple_columns);
+//				rotate90(column2);
+//				placeColumn(column2, i, columnDepth - 1);
+//			}
+
 			if(amphi || this.peristyle){
 				GameObject column2 = MakeColumn(currentFluting, currentCapital, temple_columns);
 				rotate90(column2);
@@ -329,6 +350,12 @@ public class UIControlScript : MonoBehaviour {
 					GameObject column = MakeColumn(currentFluting, currentCapital, temple_columns);
 					rotate90(column);
 					placeColumn(column, i, 1);
+
+					if(doubleAntis){
+						GameObject column2 = MakeColumn(currentFluting, currentCapital, temple_columns);
+						rotate90(column2);
+						placeColumn(column2, i, columnDepth - 2);
+					}
 				}
 			}
 
@@ -337,6 +364,19 @@ public class UIControlScript : MonoBehaviour {
 					GameObject column = MakeColumn(currentFluting, currentCapital, temple_columns);
 					rotate90(column);
 					placeColumn(column, i, 1);
+
+					if(doubleAntis){
+						GameObject column2 = MakeColumn(currentFluting, currentCapital, temple_columns);
+						rotate90(column2);
+
+						if(amphi){
+							placeColumn(column2, i, columnDepth - 2);
+						}
+						else{
+							placeColumn(column2, i, columnDepth - 1);
+						}
+					}
+
 				}
 			}
 
@@ -345,6 +385,12 @@ public class UIControlScript : MonoBehaviour {
 					GameObject column = MakeColumn(currentFluting, currentCapital, temple_columns);
 					rotate90(column);
 					placeColumn(column, i, 0);
+
+					if(doubleAntis){
+						GameObject column2 = MakeColumn(currentFluting, currentCapital, temple_columns);
+						rotate90(column2);
+						placeColumn(column2, i, columnDepth - 1);
+					}
 				}
 			}
 		}
@@ -416,9 +462,9 @@ public class UIControlScript : MonoBehaviour {
 			leftWall.transform.localScale = new Vector3(1.0f, 1.0f, vertical - 1.0f);
 			rightWall.transform.localScale = new Vector3(1.0f, 1.0f, vertical - 1.0f);
 
-			backWall.transform.position = new Vector3(0.0f, 0.0f, vertical/2 - 1);
-			leftWall.transform.position = new Vector3(-1*(horizontal/2.0f - columnDiameter/2.0f), 0.0f, 0.0f);
-			rightWall.transform.position = new Vector3(horizontal/2.0f - columnDiameter/2.0f, 0.0f, 0.0f);
+			backWall.transform.localPosition = new Vector3(0.0f, 0.0f, vertical/2 - 1);
+			leftWall.transform.localPosition = new Vector3(-1*(horizontal/2.0f - columnDiameter/2.0f), 0.0f, 0.0f);
+			rightWall.transform.localPosition = new Vector3(horizontal/2.0f - columnDiameter/2.0f, 0.0f, 0.0f);
 		}
 
 		if(peristyle || amphi){
@@ -438,10 +484,10 @@ public class UIControlScript : MonoBehaviour {
 
 			float move = halfHoriz - (columnDiameter/2.0f);
 
-			leftWall.transform.position = new Vector3(-1*move, 0.0f, 0.0f);
-			rightWall.transform.position = new Vector3(move, 0.0f, 0.0f);
+			leftWall.transform.localPosition = new Vector3(-1*move, 0.0f, 0.0f);
+			rightWall.transform.localPosition = new Vector3(move, 0.0f, 0.0f);
 
-			backWall.transform.position = new Vector3(0.0f, 0.0f, halfVert-0.5f);
+			backWall.transform.localPosition = new Vector3(0.0f, 0.0f, halfVert-0.5f);
 
 
 		}
@@ -453,20 +499,26 @@ public class UIControlScript : MonoBehaviour {
 
 			leftWall.transform.localScale = new Vector3(1.0f, 1.0f, vertical - unit);
 			rightWall.transform.localScale = new Vector3(1.0f, 1.0f, vertical - unit);
-			leftWall.transform.position = new Vector3(-1*(halfHoriz - columnDiameter/2.0f), 0.0f, unit);
-			rightWall.transform.position = new Vector3(halfHoriz - columnDiameter/2.0f, 0.0f, unit);
+			leftWall.transform.localPosition = new Vector3(-1*(halfHoriz - columnDiameter/2.0f), 0.0f, unit);
+			rightWall.transform.localPosition = new Vector3(halfHoriz - columnDiameter/2.0f, 0.0f, unit);
 
 			backWall.transform.localScale = new Vector3(horizontal - 1.0f, 1.0f, 1.0f);
-			backWall.transform.position = new Vector3(0.0f, 0.0f, halfVert + 1f);
+			backWall.transform.localPosition = new Vector3(0.0f, 0.0f, halfVert + 1f);
 		}
+
+
 
 		leftWall.transform.localScale = new Vector3(leftWall.transform.localScale.x, columnHeight + 2.0f, leftWall.transform.localScale.z);
 		rightWall.transform.localScale = new Vector3(rightWall.transform.localScale.x, columnHeight + 2.0f, rightWall.transform.localScale.z);
 		backWall.transform.localScale = new Vector3(backWall.transform.localScale.x, columnHeight + 2.0f, backWall.transform.localScale.z);
 
-		leftWall.transform.position = new Vector3(leftWall.transform.position.x, columnHeight/2.0f + 1.0f, leftWall.transform.position.z);
-		rightWall.transform.position = new Vector3(rightWall.transform.position.x, columnHeight/2.0f + 1.0f, rightWall.transform.position.z);
-		backWall.transform.position = new Vector3(backWall.transform.position.x, columnHeight/2.0f + 1.0f, backWall.transform.position.z);
+		leftWall.transform.localPosition = new Vector3(leftWall.transform.localPosition.x, columnHeight/2.0f + 1.0f, leftWall.transform.localPosition.z);
+		rightWall.transform.localPosition = new Vector3(rightWall.transform.localPosition.x, columnHeight/2.0f + 1.0f, rightWall.transform.localPosition.z);
+		backWall.transform.localPosition = new Vector3(backWall.transform.localPosition.x, columnHeight/2.0f + 1.0f, backWall.transform.localPosition.z);
+
+		if(doubleAntis){
+			backWall.transform.localPosition = new Vector3(backWall.transform.localPosition.x, backWall.transform.localPosition.y, backWall.transform.localPosition.z - columnDiameter - columnSpacing);
+		}
 	}
 
 	public void MakeEntablature(int numColumns, int columnDepth, float columnHeight, float columnSpacing, bool peristyle){
