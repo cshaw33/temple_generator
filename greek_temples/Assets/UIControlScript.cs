@@ -130,7 +130,7 @@ public class UIControlScript : MonoBehaviour {
 		numColumns = 2;
 		columnDepth = 5;
 		//columnHeight = 6;
-		columnSpacing = 2.25f * module;
+		columnSpacing = 1.125f * module;
 		peristyle = false;
 
 		temple = new GameObject();
@@ -203,11 +203,11 @@ public class UIControlScript : MonoBehaviour {
 	public void setPeristyleNone(bool t){peristyle = false; ShowTemple();}
 	public void setPeristylePeripteral(bool t){peristyle = t; ShowTemple();}
 
-	public void setPycnostyle(bool t){columnSpacing = 1.5f; ShowTemple();}
-	public void setSystyle(bool t){columnSpacing = 2.0f; ShowTemple();}
-	public void setEustyle(bool t){columnSpacing = 2.25f; ShowTemple();}
-	public void setDiastyle(bool t){columnSpacing = 3.0f; ShowTemple();}
-	public void setAraeostyle(bool t){columnSpacing = 3.5f; ShowTemple();}
+	public void setPycnostyle(bool t){columnSpacing = 0.75f; ShowTemple();}
+	public void setSystyle(bool t){columnSpacing = 1.0f; ShowTemple();}
+	public void setEustyle(bool t){columnSpacing = 1.125f; ShowTemple();}
+	public void setDiastyle(bool t){columnSpacing = 1.5f; ShowTemple();}
+	public void setAraeostyle(bool t){columnSpacing = 1.75f; ShowTemple();}
 
 	public void ToggleInterface(){
 
