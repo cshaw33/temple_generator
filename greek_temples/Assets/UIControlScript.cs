@@ -510,7 +510,7 @@ public class UIControlScript : MonoBehaviour {
 			rightWall.transform.localPosition = new Vector3(halfHoriz - columnDiameter/2.0f, 0.0f, unit);
 
 			backWall.transform.localScale = new Vector3(horizontal - 1.0f, 1.0f, 1.0f);
-			backWall.transform.localPosition = new Vector3(0.0f, 0.0f, halfVert + 1f);
+			backWall.transform.localPosition = new Vector3(0.0f, 0.0f, halfVert + 0.5f);
 		}
 
 

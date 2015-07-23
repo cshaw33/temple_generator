@@ -38,6 +38,8 @@ public class CameraMoveScript : MonoBehaviour {
 
 		float move = 1.0f*dist;
 
-		camera.transform.localPosition = new Vector3(xPos, yPos, zPos + move);
+		if((0.0f > zPos + move) && (zPos + move > -180.0f)){
+			camera.transform.localPosition = new Vector3(xPos, yPos, zPos + move);
+		}
 	}
 }
