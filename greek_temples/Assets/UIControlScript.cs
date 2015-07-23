@@ -28,6 +28,7 @@ public class UIControlScript : MonoBehaviour {
 	public GameObject NavigationPanel;
 
 	private bool interfaceOn;
+	private bool roofOn;
 
 	public Button Generate;
 
@@ -113,6 +114,7 @@ public class UIControlScript : MonoBehaviour {
 	void Start () {
 
 		interfaceOn = true;
+		roofOn = true;
 
 		module = 1.0f;
 		columnDiameter = module * 2.0f;
@@ -215,6 +217,11 @@ public class UIControlScript : MonoBehaviour {
 		ControlPanel.SetActive(interfaceOn);
 		NavigationPanel.SetActive(interfaceOn);
 	}	
+
+	public void ToggleRoof(){
+		roofOn = !roofOn;
+		ShowTemple();
+	}
 
 
 	public void ShowTemple(){
@@ -523,6 +530,8 @@ public class UIControlScript : MonoBehaviour {
 
 	public void MakeEntablature(int numColumns, int columnDepth, float columnHeight, float columnSpacing, bool peristyle){
 
+		if(!roofOn)return;
+
 		//makeArchitraves//
 		float horizontal = (columnDiameter*(float)numColumns + columnSpacing*(float)(numColumns-1));
 		float vertical = (columnDiameter * (float)columnDepth + columnSpacing*(float)(columnDepth - 1));
@@ -588,6 +597,9 @@ public class UIControlScript : MonoBehaviour {
 
 
 	public void MakeRoof(int numColumns, int columnDepth, float columnHeight, float columnSpacing, bool peristyle){
+
+		if(!roofOn) return;
+
 		GameObject front_pediment = Make(Pediment, temple_roof);
 		GameObject back_pediment = Make(Pediment, temple_roof);
 		GameObject roof = Make(Roof, temple_roof);
