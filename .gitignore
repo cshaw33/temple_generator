@@ -17,3 +17,6 @@ notes_and_references/
 
 *.pid.meta
 
+*.DS_Store
+
+
